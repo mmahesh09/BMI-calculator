@@ -1,36 +1,93 @@
-def calculate_bmi(weight, height_feet, height_inches):
-    """
-    Calculate the Body Mass Index (BMI) using the weight (in kg) and height (in feet and inches).
-    Formula: BMI = (weight / ((height_feet * 12 + height_inches) * 0.0254) ** 2)
-    """
-    height_meters = (height_feet * 12 + height_inches) * 0.0254
-    return weight / (height_meters ** 2)
+import matplotlib.pyplot as plt
 
-def interpret_bmi(bmi):
-    """
-    Interpret the BMI value and return a corresponding interpretation.
-    """
-    if bmi < 18.5:
-        return "Underweight"
-    elif 18.5 <= bmi < 25:
-        return "Normal weight"
-    elif 25 <= bmi < 30:
-        return "Overweight"
-    else:
-        return "Obese"
+class BMI_Calculator:
+    def __init__(self):
+        self.users = {}
+
+    def calculate_bmi(self, weight, height):
+        return weight / ((height / 100) ** 2)
+
+    def interpret_bmi(self, bmi):
+        if bmi < 18.5:
+            return "Underweight"
+        elif 18.5 <= bmi < 25:
+            return "Normal weight"
+        elif 25 <= bmi < 30:
+            return "Overweight"
+        else:
+            return "Obese"
+
+    def authenticate_user(self, username, password):
+        # In a real-world application, you would check credentials against a database
+        return True
+
+    def track_progress(self, user_id, weight, height_feet, height_inches, age, gender):
+        height_cm = height_feet * 30.48 + height_inches * 2.54
+        bmi = self.calculate_bmi(weight, height_cm)
+        bmi_category = self.interpret_bmi(bmi)
+
+        if user_id not in self.users:
+            self.users[user_id] = {"weights": [], "bmi_values": [], "bmi_categories": []}
+
+        self.users[user_id]["weights"].append(weight)
+        self.users[user_id]["bmi_values"].append(bmi)
+        self.users[user_id]["bmi_categories"].append(bmi_category)
+
+        return bmi, bmi_category
+
+    def plot_progress(self, user_id):
+        if user_id in self.users:
+            weights = self.users[user_id]["weights"]
+            bmi_values = self.users[user_id]["bmi_values"]
+            bmi_categories = self.users[user_id]["bmi_categories"]
+
+            plt.plot(weights, bmi_values, marker='o', linestyle='-')
+            plt.title('BMI Progress Over Time')
+            plt.xlabel('Weight (kg)')
+            plt.ylabel('BMI')
+            plt.grid(True)
+
+            # Highlight BMI categories
+            for i, category in enumerate(bmi_categories):
+                plt.text(weights[i], bmi_values[i], f'{category}', fontsize=8, ha='right', va='bottom')
+
+            plt.show()
+        else:
+            print("User ID not found.")
+
+    def get_physical_advice(self, bmi_category):
+        advice = {
+            "Underweight": "Focus on consuming calorie-dense foods and strength training exercises to build muscle mass. Include healthy fats, proteins, and carbohydrates in your diet.",
+            "Normal weight": "Maintain a balanced diet rich in fruits, vegetables, lean proteins, and whole grains. Incorporate a mix of cardiovascular and strength training exercises for overall fitness.",
+            "Overweight": "Reduce calorie intake and focus on aerobic exercises like walking, running, or cycling to burn excess fat. Gradually increase exercise intensity and duration over time.",
+            "Obese": "Consult with a healthcare professional for personalized weight loss advice. Focus on a combination of diet control and regular exercise to achieve a healthy weight. Consider joining a support group or seeking counseling for emotional support."
+        }
+        return advice.get(bmi_category, "Consult with a healthcare professional for personalized advice.")
 
 def main():
-    print("BMI Calculator")
-    print("-------------")
-    weight = float(input("Enter your weight in kg: "))
-    height_feet = int(input("Enter your height in feet: "))
-    height_inches = int(input("Enter the remaining inches: "))
+    bmi_calc = BMI_Calculator()
 
-    bmi = calculate_bmi(weight, height_feet, height_inches)
-    interpretation = interpret_bmi(bmi)
+    username = input("Enter your username: ")
+    password = input("Enter your password: ")
 
-    print(f"Your BMI is: {bmi:.2f}")
-    print(f"Interpretation: {interpretation}")
+    if bmi_calc.authenticate_user(username, password):
+        user_id = username  # For simplicity, use username as user_id
+        weight = float(input("Enter your weight in kilograms: "))
+        height_feet = float(input("Enter your height in feet: "))
+        height_inches = float(input("Enter your height in inches: "))
+        age = int(input("Enter your age in years: "))
+        gender = input("Enter your gender (0 for female, 1 for male): ")
+
+        bmi, bmi_category = bmi_calc.track_progress(user_id, weight, height_feet, height_inches, age, gender)
+        print("Your BMI is: {:.2f}".format(bmi))
+        print("You are categorized as:", bmi_category)
+
+        bmi_calc.plot_progress(user_id)
+
+        physical_advice = bmi_calc.get_physical_advice(bmi_category)
+        print("Physical advice:", physical_advice)
+    else:
+        print("Authentication failed. Please check your username and password.")
 
 if __name__ == "__main__":
     main()
