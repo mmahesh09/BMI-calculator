@@ -26,5 +26,3 @@ Progress Tracking: Enable users to track their BMI progress over time by recordi
 Physical Advice: Provide personalized advice based on the user's BMI category to promote healthy lifestyle choices. This advice could include dietary recommendations, exercise routines, and general wellness tips.
 
 
-## 🚀 About Me
-Hello! I'm Mahesh Babu, a passionate UI designer and junior Python developer currently pursuing my Bachelor's degree in Electronics and Communication Engineering from Narayana Engineering College. With a strong foundation in engineering principles and a keen interest in technology, I've embarked on a journey to explore the realms of software development and user interface design.
